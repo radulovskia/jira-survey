@@ -1,57 +1,48 @@
-from fastapi import FastAPI, Depends
-from typing import Annotated, List
-from sqlalchemy.orm import Session
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from database import SessionLocal, engine
-from fastapi.middleware.cors import CORSMiddleware
-import models
+from typing import Optional, List, Dict
+from uuid import uuid4, UUID
 
 app = FastAPI()
 
-origins = ["http://localhost:3000"]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins = origins,
-    allow_credentials = True,
-    allow_methods = ['*'],
-    allow_headers = ['*']
-)
-
-
-class QuestionBase(BaseModel):
+class Question(BaseModel):
+    id: Optional[UUID] = None
     question: str
+    options: List[str]
+    answers: Dict[str, str] = {}
+
+
+class Answer(BaseModel):
     answer: str
 
 
-class QuestionModel(QuestionBase):
-    id: int
-
-    class Config:
-        from_attributes = True
+questions_db = {}
 
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@app.post("/questions/")
+def create_question(question: Question):
+    question.id = uuid4()
+    questions_db[question.id] = question
+    return question
 
 
-db_dependency = Annotated[Session, Depends(get_db)]
+@app.get("/questions/")
+def list_questions():
+    return list(questions_db.values())
 
-models.Base.metadata.create_all(bind = engine)
 
-@app.post("/questions", response_model = QuestionModel)
-async def create_question(question: QuestionBase, db: db_dependency):
-    db_transaction = models.Question(**question.model_dump())
-    db.add(db_transaction)
-    db.commit()
-    db.refresh(db_transaction)
-    return db_transaction
+@app.post("/questions/{question_id}/answer/")
+def answer_question(question_id: UUID, answer: Answer):
+    if question_id not in questions_db:
+        raise HTTPException(status_code=404, detail="Question not found")
+    question = questions_db[question_id]
+    question.answers[str(uuid4())] = answer.answer
+    return question
 
-@app.get("/questions", response_model = List[QuestionModel])
-async def read_questions(db: db_dependency, skip: int = 0, limit: int = 100):
-    questions = db.query(models.Question).offset(skip).limit(limit).all()
-    return questions
+
+@app.get("/questions/{question_id}/")
+def get_question(question_id: UUID):
+    if question_id not in questions_db:
+        raise HTTPException(status_code=404, detail="Question not found")
+    return questions_db[question_id]
