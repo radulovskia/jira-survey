@@ -1,24 +1,21 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional, List, Dict
+from typing import Optional, Dict
 from uuid import uuid4, UUID
 
 app = FastAPI()
 
-
 class Question(BaseModel):
     id: Optional[UUID] = None
     question: str
-    options: List[str]
-    answers: Dict[str, str] = {}
-
+    options: Dict[str, str]  # Options are key-value pairs
+    answers: Dict[str, Dict[str, str]] = {}  # Adjusted to store answers as dictionaries
 
 class Answer(BaseModel):
-    answer: str
+    answer: Dict[str, str]  # This aligns with your latest request
 
 
 questions_db = {}
-
 
 @app.post("/questions/")
 def create_question(question: Question):
@@ -26,17 +23,16 @@ def create_question(question: Question):
     questions_db[question.id] = question
     return question
 
-
 @app.get("/questions/")
 def list_questions():
     return list(questions_db.values())
-
 
 @app.post("/questions/{question_id}/answer/")
 def answer_question(question_id: UUID, answer: Answer):
     if question_id not in questions_db:
         raise HTTPException(status_code=404, detail="Question not found")
     question = questions_db[question_id]
+    # Store the entire answer dict received, without extracting the value
     question.answers[str(uuid4())] = answer.answer
     return question
 

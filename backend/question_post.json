@@ -1,4 +1,9 @@
 {
   "question": "What is the capital of France?",
-  "options": ["A) London", "B) Paris", "C) Berlin", "D) Madrid"]
+  "options": {
+    "A": "London",
+    "B": "Paris",
+    "C": "Berlin",
+    "D": "Madrid"
+  }
 }
