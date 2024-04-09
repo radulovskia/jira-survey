@@ -1,0 +1,9 @@
+{
+  "question": "What is the tallest mountain in the world?",
+  "options": {
+    "A": "Mount Kilimanjaro",
+    "B": "Mount Everest",
+    "C": "K2",
+    "D": "Denali"
+  }
+}

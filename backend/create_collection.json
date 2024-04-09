@@ -1,0 +1,24 @@
+{
+    "description": "Geography Quiz",
+    "questions": [
+      {
+        "question": "What is the capital of France?",
+        "options": {
+          "A": "London",
+          "B": "Paris",
+          "C": "Berlin",
+          "D": "Madrid"
+        }
+      },
+      {
+        "question": "What is the tallest mountain in the world?",
+        "options": {
+          "A": "Mount Kilimanjaro",
+          "B": "Mount Everest",
+          "C": "K2",
+          "D": "Denali"
+        }
+      }
+    ]
+  }
+  
