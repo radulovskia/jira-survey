@@ -1,0 +1,48 @@
+
+  .TextField{
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 2rem;
+    /* background: linear-gradient(40deg, #000000, #03d5ff, #03d5ff,#000000);
+     */
+     background: white;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+  }
+
+  header {
+    text-align: center;
+    background-color: #2584ff;
+    border-start-start-radius: 25px;
+    border-start-end-radius:25px;
+    /* border-radius: 5%; */
+    width: 87%;
+    max-width: 50rem;
+
+    padding: 2rem;
+    /* margin: 3rem 0; */
+    margin: auto;
+  }
+  
+  header h1 {
+    margin: 0;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 2rem;
+    /* background: linear-gradient(40deg, #000000, #03d5ff, #03d5ff,#000000);
+     */
+     background: white;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+  }
+  
+  header p {
+    margin: 0;
+    font-size: 1rem;
+    text-align: justify;
+    padding-top: 2rem;
+    color: #ffffff;
+    font-family: "Roboto Condensed", sans-serif;
+  }
+  
