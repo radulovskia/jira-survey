@@ -17,4 +17,4 @@ WORKDIR /workspace/backend
 COPY --from=development ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 COPY main.py main.py
 EXPOSE 8000
-CMD [ "python", "-m", "main" ]
+CMD [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000" ]
