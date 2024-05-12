@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
-const CreateQuestionCollection = () => {
+const CreateSurvey = () => {
   const [questions, setQuestions] = useState([]);
   const [description, setDescription] = useState('');
 
@@ -18,7 +19,7 @@ const CreateQuestionCollection = () => {
   };
 
   const addQuestion = () => {
-    setQuestions([...questions, { question: '', options: {} }]);
+    setQuestions([...questions, { id: uuidv4(), question: '', options: {} }]);
   };
 
   const removeQuestion = (index) => {
@@ -38,9 +39,10 @@ const CreateQuestionCollection = () => {
     event.preventDefault();
 
     // Prepare the data for the POST request
-    const questionsData = {
+    const surveyData = {
       description,
       questions: questions.map((question) => ({
+        id: question.id,
         question: question.question,
         options: question.options,
       })),
@@ -53,20 +55,20 @@ const CreateQuestionCollection = () => {
     };
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/questions/collection/', questionsData, config);
-      console.log('Questions created successfully:', response.data);
+      const response = await axios.post('http://127.0.0.1:8000/surveys/', surveyData, config);
+      console.log('Survey created successfully:', response.data);
       // Handle successful creation (e.g., clear form, display success message)
     } catch (error) {
-      console.error('Error creating questions:', error);
+      console.error('Error creating survey:', error);
       // Handle errors (e.g., display error message)
     }
   };
 
   return (
     <div>
-      <h1>Create Question Collection</h1>
+      <h1>Create Survey</h1>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="description">Collection Description:</label>
+        <label htmlFor="description">Survey Description:</label>
         <input
           type="text"
           id="description"
@@ -113,10 +115,10 @@ const CreateQuestionCollection = () => {
           Add Question
         </button>
         <br />
-        <button type="submit">Create Question Collection</button>
+        <button type="submit">Create Survey</button>
       </form>
     </div>
   );
 };
 
-export default CreateQuestionCollection;
+export default CreateSurvey;

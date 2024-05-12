@@ -1,123 +1,105 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AnswerQuestions = () => {
-  const [questions, setQuestions] = useState([]);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+const SurveyList = () => {
+  const [surveys, setSurveys] = useState([]);
+  const [selectedSurvey, setSelectedSurvey] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
 
-  // Fetch questions on component mount
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/questions/');
-        setQuestions(response.data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchQuestions();
-  }, []);
-
-  const handleQuestionSelect = (question) => {
-    setSelectedQuestion(question);
-    setSelectedAnswer(null); // Reset answer selection when question changes
-  };
-
-  const handleAnswerChange = (event) => {
-    setSelectedAnswer(event.target.value);
-  };
-
-  const handleSubmitAnswer = async () => {
-    if (!selectedQuestion || !selectedAnswer) {
-      alert('Please select a question and answer before submitting.');
-      return;
-    }
-
-    const answerData = {
-      answer: {
-        [selectedAnswer]: selectedQuestion.options[selectedAnswer]
-      }
-    };
-
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-
+  const fetchSurveys = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/questions/${selectedQuestion.id}/answer/`,
-        answerData,
-        config
-      );
-      console.log('Answer submitted successfully:', response.data);
-      // Handle successful submission (e.g., display confirmation message)
+      const response = await axios.get('http://127.0.0.1:8000/surveys/');
+      setSurveys(response.data);
     } catch (error) {
-      console.error('Error submitting answer:', error);
-      // Handle errors (e.g., display error message)
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  const handleSurveyClick = async (surveyId) => {
+    setSelectedSurvey(null);
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/surveys/${surveyId}/`);
+      setSelectedSurvey(response.data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAnswerChange = (event, questionId) => {
+    setSelectedAnswers({ ...selectedAnswers, [questionId]: event.target.value });
+  };
+
+  const handleSubmitAnswers = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const surveyId = selectedSurvey.id;
+      const answers = Object.entries(selectedAnswers).map(([questionId, answer]) => ({
+        question_id: questionId,
+        answer: answer
+      }));
+      await axios.post(`http://127.0.0.1:8000/surveys/${surveyId}/answer/`, answers);
+      alert('Answers submitted successfully');
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSurveys();
+  }, []);
 
   return (
     <div>
-      <h1>Answer Questions</h1>
-      {isLoading && <p>Loading questions...</p>}
+      <h1>Survey List</h1>
+      {isLoading && <p>Loading surveys...</p>}
       {error && <p>Error: {error}</p>}
 
-      {questions.length > 0 ? (
-        <div>
-          <h2>Select a Question:</h2>
-          <ul>
-            {questions.map((question) => (
-              <li key={question.id}>
-                <button onClick={() => handleQuestionSelect(question)}>
-                  {question.question}
-                </button>
-              </li>
-            ))}
-          </ul>
+      <ul>
+        {surveys.map(survey => (
+          <li key={survey.id}>
+            <button onClick={() => handleSurveyClick(survey.id)}>{survey.description}</button>
+          </li>
+        ))}
+      </ul>
 
-          {selectedQuestion && (
-            <div>
-              <h3>Question: {selectedQuestion.question}</h3>
-              {selectedQuestion.options && (
-                <div>
-                  <h4>Options:</h4>
-                  {Object.keys(selectedQuestion.options).map((optionLabel) => (
-                    <div key={optionLabel}>
-                      <input
-                        type="radio"
-                        id={`option-${optionLabel}`}
-                        value={optionLabel}
-                        checked={selectedAnswer === optionLabel}
-                        onChange={handleAnswerChange}
-                      />
-                      <label htmlFor={`option-${optionLabel}`}>
-                        {optionLabel}: {selectedQuestion.options[optionLabel]}
-                      </label>
-                    </div>
-                  ))}
+      {selectedSurvey && (
+        <div>
+          <h2>Questions:</h2>
+          {selectedSurvey.questions.map(question => (
+            <div key={question.id}>
+              <h3>{question.question}</h3>
+              {Object.entries(question.options).map(([optionLabel, optionText]) => (
+                <div key={optionLabel}>
+                  <input
+                    type="radio"
+                    id={`option-${question.id}-${optionLabel}`}
+                    name={`question-${question.id}`}
+                    value={optionLabel}
+                    onChange={(e) => handleAnswerChange(e, question.id)}
+                  />
+                  <label htmlFor={`option-${question.id}-${optionLabel}`}>{optionText}</label>
                 </div>
-              )}
-              <button onClick={handleSubmitAnswer} disabled={!selectedAnswer}>
-                Submit Answer
-              </button>
+              ))}
             </div>
-          )}
+          ))}
+          <button onClick={handleSubmitAnswers}>Submit Answers</button>
         </div>
-      ) : (
-        <p>No questions available.</p>
       )}
     </div>
   );
 };
 
-export default AnswerQuestions;
+export default SurveyList;
