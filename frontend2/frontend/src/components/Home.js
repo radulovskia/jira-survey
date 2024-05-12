@@ -10,6 +10,7 @@ const Home = () => {
         <Link to="/create">Create Collection</Link>
         <Link to="/all">All Questions</Link>
         <Link to="/answer">Answer</Link>
+        <Link to="/analytics">Analytics</Link>
       </nav>
     </div>
   );
