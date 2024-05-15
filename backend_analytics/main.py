@@ -1,24 +1,50 @@
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import random
+from confluent_kafka import Consumer, KafkaException
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace "*" with the specific origins you want to allow
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-dummy_data = {
-    "labels": ["January", "February", "March", "April", "May", "June", "July"],
-    "data": [0,0,0,0,0,0,0]
+# Kafka
+conf = {
+    # "bootstrap.servers": "localhost:9092, localhost:9094, localhost:9096", # external
+    "bootstrap.servers": "broker1:9091, broker2:9093, broker3:9095", # internal
+    "group.id": "survey-analytics",
+    "session.timeout.ms": 6000,
+    "auto.offset.reset": "earliest",
+    "enable.auto.offset.store": False,
 }
 
-@app.get("/data")
-async def get_analytics():
-    return dummy_data
+def print_assignment(consumer, partitions):
+    print("Assigned to:", partitions)
+
+kafka_topic = "survey_topic"
+consumer = Consumer(conf)
+consumer.subscribe([kafka_topic], on_assign=print_assignment)
+
+@app.get("/")
+async def greeting():
+    return {"greeting":"hi"}
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
-    await websocket.send_json(dummy_data)
-    while True:
-        numbers = [(x + 1)%100 for x in dummy_data["data"]]
-        dummy_data["data"] = numbers
-        await websocket.send_json(dummy_data)
+    try:
+        while True:
+            msg = consumer.poll(timeout=1.0)
+            if msg is None:
+                continue
+            if msg.error():
+                raise KafkaException(msg.error())
+            await websocket.send_json(msg)
+            print(msg)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch survey answers: {str(e)}")
+    finally:
+        consumer.close()
