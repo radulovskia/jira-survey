@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import { api_backend } from './api';
 
 const CreateSurvey = () => {
   const [questions, setQuestions] = useState([]);
@@ -55,7 +56,7 @@ const CreateSurvey = () => {
     };
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/surveys/', surveyData, config);
+      const response = await axios.post(`http://${api_backend.defaults.baseURL}/surveys/`, surveyData, config);
       console.log('Survey created successfully:', response.data);
       // Handle successful creation (e.g., clear form, display success message)
     } catch (error) {

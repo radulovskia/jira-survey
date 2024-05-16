@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { api_backend } from './api';
 
 const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
@@ -12,7 +13,7 @@ const SurveyList = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get('http://127.0.0.1:8000/surveys/');
+      const response = await axios.get(`http://${api_backend.defaults.baseURL}/surveys/`);
       setSurveys(response.data);
     } catch (error) {
       setError(error.message);
@@ -26,7 +27,7 @@ const SurveyList = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/surveys/${surveyId}/`);
+      const response = await axios.get(`http://${api_backend.defaults.baseURL}/surveys/${surveyId}/`);
       setSelectedSurvey(response.data);
     } catch (error) {
       setError(error.message);
@@ -36,7 +37,9 @@ const SurveyList = () => {
   };
 
   const handleAnswerChange = (event, questionId) => {
-    setSelectedAnswers({ ...selectedAnswers, [questionId]: event.target.value });
+    const selectedOptionLabel = event.target.value;
+    const selectedOption = selectedSurvey.questions.find(q => q.id == questionId).options[selectedOptionLabel];
+    setSelectedAnswers({ ...selectedAnswers, [questionId]: selectedOption });
   };
 
   const handleSubmitAnswers = async () => {
@@ -48,8 +51,8 @@ const SurveyList = () => {
         question_id: questionId,
         answer: answer
       }));
-      await axios.post(`http://127.0.0.1:8000/surveys/${surveyId}/answer/`, answers);
-      alert('Answers submitted successfully');
+      await axios.post(`http://${api_backend.defaults.baseURL}/surveys/${surveyId}/answer/`, answers);
+      // alert('Answers submitted successfully');
     } catch (error) {
       setError(error.message);
     } finally {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { api_backend } from './api';
 
 function MyComponent() {
   const [questions, setQuestions] = useState([]); // State to store fetched data
@@ -6,7 +7,7 @@ function MyComponent() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/questions/'); // Replace with actual API endpoint
+        const response = await fetch(`http://${api_backend.defaults.baseURL}/questions/`); // Replace with actual API endpoint
         if (!response.ok) {
           throw new Error(`Error fetching data: ${response.statusText}`);
         }
