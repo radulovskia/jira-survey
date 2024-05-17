@@ -7,7 +7,8 @@ app = FastAPI()
 
 kafka_topic = "survey_topic"
 conf = {
-    "bootstrap.servers": "localhost:9092,localhost:9094,localhost:9096",
+    # "bootstrap.servers": "localhost:9092,localhost:9094,localhost:9096", # external
+    "bootstrap.servers": "broker1:9091,broker2:9093,broker3:9095", # internal
     "group.id": "survey-analytics",
     "session.timeout.ms": 6000,
     "auto.offset.reset": "earliest",

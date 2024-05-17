@@ -74,3 +74,12 @@ services:
     depends_on:
       broker3:
         condition: service_healthy
+
+  backend-analytics:
+    restart: unless-stopped
+    ports:
+     - 8001:8001
+    build:
+      context: ./backend_analytics
+    depends_on:
+     - backend
