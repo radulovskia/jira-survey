@@ -1,6 +1,5 @@
 from fastapi import FastAPI, WebSocket
 from aiokafka import AIOKafkaConsumer
-import json
 
 app = FastAPI()
 
@@ -14,7 +13,7 @@ async def kafka_polling(websocket):
         kafka_topic,
         bootstrap_servers=kafka_servers,
         auto_commit_interval_ms=1000,
-        auto_offset_reset='earliest'
+        # auto_offset_reset='earliest'
     )
     await consumer.start()
     try:
@@ -27,8 +26,7 @@ async def kafka_polling(websocket):
         await consumer.stop()
 
 async def send_to_websocket(msg, websocket):
-    msg_json = json.dumps(msg)
-    await websocket.send_text(msg_json)
+    await websocket.send_text(msg)
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

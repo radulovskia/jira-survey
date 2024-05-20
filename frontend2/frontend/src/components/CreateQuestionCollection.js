@@ -96,23 +96,9 @@ const CreateSurvey = () => {
             onChange={(event) => setDescription(event.target.value)}
             sx={{ width: "60%", marginBottom: "5%" }}
           />
-
-          <Typography variant="h5" gutterBottom htmlFor="description">Survey Description:</Typography>
-          <TextField
-            type="text"
-            id="description"
-            label="Description"
-            value={surveyDescription}
-            multiline
-            maxRows={15}
-            minRows={5}
-            onChange={(event) => setSurveyDescription(event.target.value)}
-            sx={{ width: "70%", marginBottom: "5%" }}
-          />
           <Typography variant="h5" gutterBottom htmlFor="questions">Questions</Typography>
           {questions.map((question, index) => (
-            <div key={index}>
-              {/* <Typography variant="h5" gutterBottom htmlFor="questions">Question {index + 1}</Typography> */}
+            <div key={index} style={{ marginBottom: "50px"}}>
 
               <TextField
                 type="text"
@@ -120,30 +106,9 @@ const CreateSurvey = () => {
                 label={"Question" + (index + 1)}
                 // value={title}
 
-                onChange={(event) => setTitle(event.target.value) + handleQuestionChange(index, event)}
+                onChange={(event) => setQuestionDescription(event.target.value) + handleQuestionChange(index, event)}
                 sx={{ width: "60%", marginBottom: "5%" }}
               />
-
-
-              {/* <label htmlFor={`question-${index}`}>Question Text:</label> */}
-
-              <TextField
-                type="text"
-                id={`question-${index}`}
-                label={"Question " + (index + 1) + " description"}
-                // value={question.question}
-                multiline
-                maxRows={15}
-                minRows={5}
-                onChange={(event) => setQuestionDescription(event.target.value) + handleQuestionChange(index, event)}
-                sx={{ width: "70%", marginBottom: "5%" }}
-              />
-              {/* <input
-              type="text"
-              id={`question-${index}`}
-              value={question.question}
-              onChange={(event) => handleQuestionChange(index, event)}
-            /> */}
 
               <Typography variant="h5" gutterBottom htmlFor="questions" sx={{ marginBottom: "3%" }}>Options</Typography>
               {Object.keys(question.options).map((optionLabel) => (

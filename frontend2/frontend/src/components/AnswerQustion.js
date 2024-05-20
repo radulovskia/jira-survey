@@ -11,7 +11,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 
-
 const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
   const [selectedSurvey, setSelectedSurvey] = useState(null);
@@ -102,63 +101,29 @@ const SurveyList = () => {
             <Box key={question.id}>
 
               <FormControl>
-                <FormLabel id="demo-radio-buttons-group-label"><Typography variant="h5" gutterBottom>{question.question}</Typography></FormLabel>
+                <FormLabel id={`question-${question.id}-label`}><Typography variant="h5" gutterBottom>{question.question}</Typography></FormLabel>
                 <RadioGroup
-                  aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="female"
-                  name="radio-buttons-group"
+                  aria-labelledby={`question-${question.id}-label`}
+                  name={`question-${question.id}`}
+                  onChange={(e) => handleAnswerChange(e, question.id)}
                 >
-
-                  {
-                    Object.entries(question.options).map(([optionLabel, optionText]) => (
-                      <Box sx={{ marginBottom: "1%", width: "100%" }} key={optionLabel}>
-
-                        {/* <RadioGroup
-                      aria-labelledby="demo-radio-buttons-group-label"
-                      defaultValue="female"
-                      name={`question-${question.id}`}
-                    > */}
-                        <FormControlLabel htmlFor={`option-${question.id}-${optionLabel}`} value={optionText} control={<Radio />} label={optionText} />
-                        {/* <Typography sx={{ width: "10%" }} variant="subtitle1" htmlFor={`option-${question.id}-${optionLabel}`}>{optionText}</Typography>
-                  <input
-                    type="radio"
-                    id={`option-${question.id}-${optionLabel}`}
-                    name={`question-${question.id}`}
-                    value={optionLabel}
-                    onChange={(e) => handleAnswerChange(e, question.id)}
-                  /> */}
-
-                      </Box>
-
-                      ///////////////////////////////////////////////////////////////////////////////
-                      // <FormControl key={optionLabel} id={`option-${question.id}-${optionLabel}`}>
-                      //   <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
-                      //   <RadioGroup
-                      //     aria-labelledby="demo-radio-buttons-group-label"
-                      //     defaultValue="female"
-                      //     name="radio-buttons-group"
-                      //   >
-                      //     <FormControlLabel value={optionLabel} control={<Radio />} label={optionLabel} />
-                      //   </RadioGroup>
-                      // </FormControl>
-
-
-                    ))
-                  }
-
+                  {Object.entries(question.options).map(([optionLabel, optionText]) => (
+                    <FormControlLabel
+                      key={optionLabel}
+                      value={optionLabel}
+                      control={<Radio />}
+                      label={optionText}
+                    />
+                  ))}
                 </RadioGroup>
               </FormControl>
-
-
-
             </Box>
           ))}
-          <br></br>
+          <br />
           <Button onClick={handleSubmitAnswers}>Submit Answers</Button>
         </Box>
-      )
-      }
-    </Container >
+      )}
+    </Container>
   );
 };
 
