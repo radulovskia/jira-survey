@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api_backend } from './api';
+import TemporaryDrawer from './NavigationDrawer';
+
 
 function MyComponent() {
   const [questions, setQuestions] = useState([]); // State to store fetched data
@@ -23,6 +25,7 @@ function MyComponent() {
 
   return (
     <div>
+      <TemporaryDrawer />
       <h1>Questions</h1>
       {questions.length > 0 ? (
         questions.map((question, index) => (

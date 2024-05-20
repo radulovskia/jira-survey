@@ -5,6 +5,10 @@ import Home from './components/Home';
 import AllQuestions from './components/AllQuestions';
 import AnswerQuestions from './components/AnswerQustion';
 import Analytics from './components/Analytics';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 function App() {
   return (
@@ -15,10 +19,10 @@ function App() {
         <Route path="/answer" element={<AnswerQuestions />} />
         <Route path="/all" element={<AllQuestions />} />
         <Route path="/analytics" element={<Analytics />} />
-    </Routes>
-  </Router>
-);
-    
+      </Routes>
+    </Router>
+  );
+
 }
 
 export default App;

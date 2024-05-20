@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { api_backend } from './api';
+import { Box, Button, Container, Divider, List, TextField } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import { Typography } from '@mui/material';
+import TemporaryDrawer from './NavigationDrawer';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+
 
 const SurveyList = () => {
   const [surveys, setSurveys] = useState([]);
@@ -63,45 +73,92 @@ const SurveyList = () => {
   useEffect(() => {
     fetchSurveys();
   }, []);
-
+  console.log(surveys);
   return (
-    <div>
-      <h1>Survey List</h1>
-      {isLoading && <p>Loading surveys...</p>}
-      {error && <p>Error: {error}</p>}
+    <Container>
+      <TemporaryDrawer />
+      <Divider />
+      <br></br>
 
-      <ul>
+      <Typography variant="h2" gutterBottom>Survey List</Typography>
+      {isLoading && <Typography variant="h4" gutterBottom>Loading surveys...</Typography>}
+      {error && <Typography variant="h4" gutterBottom>Error: {error}</Typography>}
+
+      <List >
         {surveys.map(survey => (
-          <li key={survey.id}>
-            <button onClick={() => handleSurveyClick(survey.id)}>{survey.description}</button>
-          </li>
+          <ListItem disablePadding key={survey.id} sx={{ marginBottom: "2%" }}>
+            <Button size='large' variant='contained' onClick={() => handleSurveyClick(survey.id)}>{survey.description}</Button>
+            <br></br>
+          </ListItem>
+
         ))}
-      </ul>
+      </List>
+      <Divider></Divider>
 
       {selectedSurvey && (
-        <div>
-          <h2>Questions:</h2>
+        <Box>
+          <Typography variant="h4" gutterBottom>Questions:</Typography>
           {selectedSurvey.questions.map(question => (
-            <div key={question.id}>
-              <h3>{question.question}</h3>
-              {Object.entries(question.options).map(([optionLabel, optionText]) => (
-                <div key={optionLabel}>
+            <Box key={question.id}>
+
+              <FormControl>
+                <FormLabel id="demo-radio-buttons-group-label"><Typography variant="h5" gutterBottom>{question.question}</Typography></FormLabel>
+                <RadioGroup
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue="female"
+                  name="radio-buttons-group"
+                >
+
+                  {
+                    Object.entries(question.options).map(([optionLabel, optionText]) => (
+                      <Box sx={{ marginBottom: "1%", width: "100%" }} key={optionLabel}>
+
+                        {/* <RadioGroup
+                      aria-labelledby="demo-radio-buttons-group-label"
+                      defaultValue="female"
+                      name={`question-${question.id}`}
+                    > */}
+                        <FormControlLabel htmlFor={`option-${question.id}-${optionLabel}`} value={optionText} control={<Radio />} label={optionText} />
+                        {/* <Typography sx={{ width: "10%" }} variant="subtitle1" htmlFor={`option-${question.id}-${optionLabel}`}>{optionText}</Typography>
                   <input
                     type="radio"
                     id={`option-${question.id}-${optionLabel}`}
                     name={`question-${question.id}`}
                     value={optionLabel}
                     onChange={(e) => handleAnswerChange(e, question.id)}
-                  />
-                  <label htmlFor={`option-${question.id}-${optionLabel}`}>{optionText}</label>
-                </div>
-              ))}
-            </div>
+                  /> */}
+
+                      </Box>
+
+                      ///////////////////////////////////////////////////////////////////////////////
+                      // <FormControl key={optionLabel} id={`option-${question.id}-${optionLabel}`}>
+                      //   <FormLabel id="demo-radio-buttons-group-label">Gender</FormLabel>
+                      //   <RadioGroup
+                      //     aria-labelledby="demo-radio-buttons-group-label"
+                      //     defaultValue="female"
+                      //     name="radio-buttons-group"
+                      //   >
+                      //     <FormControlLabel value={optionLabel} control={<Radio />} label={optionLabel} />
+                      //   </RadioGroup>
+                      // </FormControl>
+
+
+                    ))
+                  }
+
+                </RadioGroup>
+              </FormControl>
+
+
+
+            </Box>
           ))}
-          <button onClick={handleSubmitAnswers}>Submit Answers</button>
-        </div>
-      )}
-    </div>
+          <br></br>
+          <Button onClick={handleSubmitAnswers}>Submit Answers</Button>
+        </Box>
+      )
+      }
+    </Container >
   );
 };
 

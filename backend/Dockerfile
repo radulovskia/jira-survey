@@ -7,7 +7,8 @@ ENV POETRY_NO_INTERACTION=1 \
 
 WORKDIR /workspace/backend
 COPY ./pyproject.toml ./poetry.lock ./
-RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --no-root
+RUN poetry install --no-root
+# RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --no-root
 
 FROM python:3.11 AS production
 ENV VIRTUAL_ENV=/workspace/backend/.venv \

@@ -2,10 +2,19 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { api_backend } from './api';
+import { Box, Button, Container, Divider, TextField } from '@mui/material';
+import { Typography } from '@mui/material';
+import TemporaryDrawer from './NavigationDrawer';
+// import NewQuestionModal from './NewQuestionModal';
 
 const CreateSurvey = () => {
+  const [surveyTitle, setSurveyTitle] = useState('');
+  const [surveyDescription, setSurveyDescription] = useState('');
   const [questions, setQuestions] = useState([]);
   const [description, setDescription] = useState('');
+  const [questionDescription, setQuestionDescription] = useState('');
+  const [title, setTitle] = useState('');
+
 
   const handleQuestionChange = (index, event) => {
     const newQuestions = [...questions];
@@ -41,6 +50,7 @@ const CreateSurvey = () => {
 
     // Prepare the data for the POST request
     const surveyData = {
+      title,
       description,
       questions: questions.map((question) => ({
         id: question.id,
@@ -66,59 +76,108 @@ const CreateSurvey = () => {
   };
 
   return (
-    <div>
-      <h1>Create Survey</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="description">Survey Description:</label>
-        <input
-          type="text"
-          id="description"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
+    <>
+      <TemporaryDrawer />
+      <Divider />
+      <Container >
 
-        <h2>Questions</h2>
-        {questions.map((question, index) => (
-          <div key={index}>
-            <h3>Question {index + 1}</h3>
-            <label htmlFor={`question-${index}`}>Question Text:</label>
-            <input
+        <br></br>
+        <Typography variant="h2" gutterBottom>Create Survey</Typography>
+
+        <form onSubmit={handleSubmit}>
+
+          <Typography variant="h5" gutterBottom htmlFor="title">Survey Title:</Typography>
+          <TextField
+            type="text"
+            id="title"
+            label="Title"
+            value={description}
+            multiline
+            onChange={(event) => setDescription(event.target.value)}
+            sx={{ width: "60%", marginBottom: "5%" }}
+          />
+
+          <Typography variant="h5" gutterBottom htmlFor="description">Survey Description:</Typography>
+          <TextField
+            type="text"
+            id="description"
+            label="Description"
+            value={surveyDescription}
+            multiline
+            maxRows={15}
+            minRows={5}
+            onChange={(event) => setSurveyDescription(event.target.value)}
+            sx={{ width: "70%", marginBottom: "5%" }}
+          />
+          <Typography variant="h5" gutterBottom htmlFor="questions">Questions</Typography>
+          {questions.map((question, index) => (
+            <div key={index}>
+              {/* <Typography variant="h5" gutterBottom htmlFor="questions">Question {index + 1}</Typography> */}
+
+              <TextField
+                type="text"
+                id={`title-${index}`}
+                label={"Question" + (index + 1)}
+                // value={title}
+
+                onChange={(event) => setTitle(event.target.value) + handleQuestionChange(index, event)}
+                sx={{ width: "60%", marginBottom: "5%" }}
+              />
+
+
+              {/* <label htmlFor={`question-${index}`}>Question Text:</label> */}
+
+              <TextField
+                type="text"
+                id={`question-${index}`}
+                label={"Question " + (index + 1) + " description"}
+                // value={question.question}
+                multiline
+                maxRows={15}
+                minRows={5}
+                onChange={(event) => setQuestionDescription(event.target.value) + handleQuestionChange(index, event)}
+                sx={{ width: "70%", marginBottom: "5%" }}
+              />
+              {/* <input
               type="text"
               id={`question-${index}`}
               value={question.question}
               onChange={(event) => handleQuestionChange(index, event)}
-            />
+            /> */}
 
-            <h4>Options</h4>
-            {Object.keys(question.options).map((optionLabel) => (
-              <div key={optionLabel}>
-                <label htmlFor={`option-${index}-${optionLabel}`}>
-                  Option {optionLabel}:
-                </label>
-                <input
-                  type="text"
-                  id={`option-${index}-${optionLabel}`}
-                  value={question.options[optionLabel]}
-                  onChange={(event) => handleOptionChange(index, optionLabel, event)}
-                />
-              </div>
-            ))}
-            <button type="button" onClick={() => addOption(index)}>
-              Add Option
-            </button>
-            <button type="button" onClick={() => removeQuestion(index)}>
-              Remove Question
-            </button>
-          </div>
-        ))}
+              <Typography variant="h5" gutterBottom htmlFor="questions" sx={{ marginBottom: "3%" }}>Options</Typography>
+              {Object.keys(question.options).map((optionLabel) => (
+                <div key={optionLabel}>
+                  <Typography variant="subtitle2" htmlFor={`option-${index}-${optionLabel}`}>
+                    Option {optionLabel}:
+                  </Typography>
+                  <TextField
+                    variant='standard'
+                    type="text"
+                    id={`option-${index}-${optionLabel}`}
+                    value={question.options[optionLabel]}
+                    onChange={(event) => handleOptionChange(index, optionLabel, event)}
+                    sx={{ marginBottom: "3%" }}
+                  />
+                </div>
+              ))}
+              <Button type="button" onClick={() => addOption(index)}>
+                Add Option
+              </Button>
+              <Button type="button" onClick={() => removeQuestion(index)}>
+                Remove Question
+              </Button>
+            </div>
+          ))}
 
-        <button type="button" onClick={addQuestion}>
-          Add Question
-        </button>
-        <br />
-        <button type="submit">Create Survey</button>
-      </form>
-    </div>
+          <Button type="button" onClick={addQuestion}>
+            Add Question
+          </Button>
+          <br />
+          <Button type="submit">Create Survey</Button>
+        </form>
+      </Container>
+    </>
   );
 };
 
